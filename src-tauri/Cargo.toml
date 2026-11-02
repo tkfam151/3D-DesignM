@@ -1,0 +1,40 @@
+[package]
+name = "shapesmith"
+version = "1.0.0"
+description = "Shapesmith - describe a 3D model, refine it in chat, download it"
+authors = ["Shapesmith"]
+edition = "2024"
+
+[lib]
+# The `_lib` suffix keeps the lib name distinct from the bin name (needed on Windows).
+name = "shapesmith_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# OS secure storage for the API key: macOS/iOS Keychain, Windows Credential Manager,
+# Linux Secret Service. Android has no backend in this crate, so the key is kept in
+# the app's private sandbox there (see src/lib.rs).
+[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
+keyring = { version = "3", features = ["apple-native"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+keyring = { version = "3", features = ["windows-native"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+keyring = { version = "3", features = ["sync-secret-service", "crypto-rust"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
