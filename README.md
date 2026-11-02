@@ -97,13 +97,24 @@ iOS apps can't be distributed this way. See the [iOS section](#ios-install-on-ip
      Enter your password, then click **Open Anyway** again.
    - **macOS 14 and earlier:** right-click (or Control-click) Shapesmith in Applications,
      choose **Open**, then click **Open** in the dialog.
-   - **If it says the app "is damaged":** open **Terminal** and run
-     `xattr -dr com.apple.quarantine /Applications/Shapesmith.app`, then open the app again.
-6. Paste your API key and click **Save key and start**.
+   - **If it says the app "is damaged" or still won't open:** open **Terminal**
+     (Applications → Utilities → Terminal), paste this whole line and press **Return**:
+
+     ```bash
+     pkill -9 -f "Shapesmith"; mkdir -p ~/Applications; rm -rf ~/Applications/Shapesmith.app; ditto --noextattr --noqtn /Applications/Shapesmith.app ~/Applications/Shapesmith.app && codesign --force --deep --sign - ~/Applications/Shapesmith.app && open ~/Applications/Shapesmith.app
+     ```
+
+     This closes Shapesmith if it's running, copies it to the **Applications** folder in your
+     home folder without the download "quarantine" flag, re-signs it for this Mac, and opens
+     it. From then on, open Shapesmith from **~/Applications** (in Finder: **Go → Home →
+     Applications**). You can drag it to the Dock from there.
+6. Paste your API key and click **Save key and start**. If macOS asks whether Shapesmith
+   may use your Keychain, enter your Mac password and click **Always Allow**.
 
 Your key is stored in the macOS **Keychain**, under *com.shapesmith.app*.
 
-**Uninstall:** drag Shapesmith from Applications to the Trash.
+**Uninstall:** drag Shapesmith from Applications to the Trash. If you used the Terminal
+command, also delete the copy in **~/Applications**.
 
 ---
 
@@ -254,7 +265,7 @@ is no Shapesmith server.
 | "Couldn't reach the Claude API" | Check your internet connection. Corporate networks may block `api.anthropic.com`. |
 | "Rate limit reached" | Wait a minute and try again. |
 | The model looks wrong | Ask for a fix in plain words ("the handle should touch the body"), or tap **New** and describe it again in more detail. |
-| macOS says the app "is damaged" | Run `xattr -dr com.apple.quarantine /Applications/Shapesmith.app` in Terminal. |
+| macOS says the app "is damaged" or won't open | Run the Terminal command in [macOS step 5](#macos-install-from-the-dmg), then open Shapesmith from `~/Applications`. |
 | Windows says "Windows protected your PC" | Click **More info → Run anyway**. |
 | Android won't install the update | Uninstall the old version first (it was signed with a different key). |
 | iOS app stopped opening after a week | Free Apple ID limit. Reconnect the phone and press ▶ Run in Xcode again. |
