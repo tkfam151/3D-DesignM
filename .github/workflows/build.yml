@@ -91,9 +91,8 @@ jobs:
           workspaces: src-tauri
       - run: npm ci
       - name: Build APK
-        env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.2.12479018
         run: |
+          export NDK_HOME="$ANDROID_HOME/ndk/27.2.12479018"
           npx tauri android init --ci
           npx tauri android build --apk --ci
       - name: Sign APK
